@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>JVB Productions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>emailjs.init('_dVdo0cKxBRteyWK_');</script>
+  <style>
+    :root{--yellow:#FAFF00;--cyan:#00E5FF;--green:#39FF14;--orange:#FF6B00;--bg:#060608;--bg2:#0d0d10;--card:#111115;--border:#222228;--text:#f0f0f0;--muted:#666;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;overflow-x:hidden;cursor:none;}
+
+    .cursor{width:12px;height:12px;background:var(--yellow);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;}
+    .cursor-ring{width:36px;height:36px;border:1.5px solid var(--yellow);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.15s ease;mix-blend-mode:difference;}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.35;}
+
+    /* ═══════════════════════════════
+       LOGIN OVERLAY
+    ═══════════════════════════════ */
+    #login-overlay{
+      position:fixed;inset:0;z-index:9000;
+      background:var(--bg);
+      display:flex;align-items:flex-start;justify-content:center;
+      flex-direction:column;
+      animation:fadeIn 0.4s ease;
+      overflow-y:auto;
+      padding:40px 20px 40px;
+    }
+    #login-overlay.hidden{display:none;}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+    .login-bg-grid{position:absolute;inset:0;background-image:linear-gradient(#FAFF0008 1px,transparent 1px),linear-gradient(90deg,#FAFF0008 1px,transparent 1px);background-size:70px 70px;pointer-events:none;}
+    .login-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+    .lo1{width:500px;height:500px;background:#FAFF0012;top:-150px;left:-150px;animation:o1 9s ease-in-out infinite;}
+    .lo2{width:400px;height:400px;background:#00E5FF0E;bottom:-100px;right:-100px;animation:o2 11s ease-in-out infinite;}
+    @keyframes o1{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,30px)}}
+    @keyframes o2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,-50px)}}
+
+    .login-box{
+      position:relative;z-index:2;
+      background:linear-gradient(135deg,var(--card),#0d0d12);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:48px 44px;
+      width:min(420px,92vw);
+      text-align:center;
+      box-shadow:0 40px 120px #00000060;
+    }
+    .login-logo{width:160px;margin-bottom:28px;filter:drop-shadow(0 0 30px #FAFF0050);animation:lf 5s ease-in-out infinite;}
+    @keyframes lf{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .login-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:5px;color:#fff;margin-bottom:6px;}
+    .login-sub{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:32px;}
+
+    .login-tabs{display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:28px;}
+    .ltab{flex:1;padding:11px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;background:transparent;border:none;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+    .ltab.active{background:var(--yellow);color:#000;}
+
+    .lfield{margin-bottom:16px;text-align:left;}
+    .lfield label{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+    .lfield input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:13px 15px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;}
+    .lfield input:focus{border-color:var(--yellow);box-shadow:0 0 0 3px #FAFF0015;}
+    .lerr{color:#FF6B00;font-family:'Space Mono',monospace;font-size:11px;margin-bottom:14px;display:none;text-align:center;}
+    .lsuccess{color:var(--green);font-family:'Space Mono',monospace;font-size:11px;margin-bottom:14px;display:none;text-align:center;}
+
+    .login-btn{
+      width:100%;background:var(--yellow);color:#000;border:none;padding:15px;
+      font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:4px;
+      cursor:pointer;border-radius:10px;transition:all 0.2s;margin-top:4px;
+    }
+    .login-btn:hover{background:var(--cyan);transform:translateY(-2px);box-shadow:0 10px 30px #00E5FF40;}
+
+    .login-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:22px 0;}
+    .login-netlify-btn{
+      width:100%;background:transparent;color:var(--cyan);border:1px solid var(--cyan);
+      padding:12px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;
+      cursor:pointer;border-radius:10px;transition:all 0.2s;
+    }
+    .login-netlify-btn:hover{background:var(--cyan);color:#000;}
+    .login-note{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:16px;letter-spacing:1px;}
+
+    /* INVITE ONLY BADGE */
+    .invite-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      background:#FAFF0015;border:1px solid #FAFF0030;
+      border-radius:100px;padding:5px 14px;
+      font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;
+      color:var(--yellow);text-transform:uppercase;margin-bottom:22px;
+    }
+    .invite-dot{width:5px;height:5px;border-radius:50%;background:var(--yellow);animation:pulse 1.5s ease-in-out infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 40px;height:70px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,6,8,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+    .nav-logo{height:44px;filter:drop-shadow(0 0 12px #FAFF0060);}
+    .nav-links{display:flex;gap:24px;list-style:none;}
+    .nav-links a{color:var(--muted);text-decoration:none;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;transition:color 0.2s;position:relative;}
+    .nav-links a:hover,.nav-links a.active{color:var(--yellow);}
+    .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--yellow);transform:scaleX(0);transition:transform 0.2s;}
+    .nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1);}
+    .nav-right{display:flex;align-items:center;gap:12px;}
+    .user-pill{
+      display:flex;align-items:center;gap:8px;
+      background:var(--card);border:1px solid var(--border);
+      border-radius:100px;padding:6px 14px;
+      font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);
+      cursor:pointer;transition:all 0.2s;
+    }
+    .user-pill:hover{border-color:var(--yellow);color:var(--yellow);}
+    .user-avatar{width:22px;height:22px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:11px;color:#000;font-weight:700;}
+    .nav-cta{background:var(--yellow);color:#000;border:none;padding:10px 20px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:all 0.2s;white-space:nowrap;}
+    .nav-cta:hover{background:var(--cyan);}
+
+    /* TICKER */
+    .ticker-wrap{border-bottom:1px solid var(--border);overflow:hidden;padding:12px 0;background:var(--bg2);margin-top:70px;}
+    .ticker{display:flex;animation:ticker 24s linear infinite;white-space:nowrap;}
+    .ticker-item{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:4px;color:var(--muted);padding:0 36px;display:inline-flex;align-items:center;gap:14px;}
+    .tdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+    @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+    /* HERO */
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 20px 60px;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(#FAFF0008 1px,transparent 1px),linear-gradient(90deg,#FAFF0008 1px,transparent 1px);background-size:70px 70px;}
+    .orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+    .o1{width:500px;height:500px;background:#FAFF0015;top:-100px;left:-100px;animation:o1 8s ease-in-out infinite;}
+    .o2{width:400px;height:400px;background:#00E5FF12;bottom:0;right:-50px;animation:o2 10s ease-in-out infinite;}
+    .o3{width:300px;height:300px;background:#39FF1410;top:50%;left:50%;transform:translate(-50%,-50%);animation:o3 6s ease-in-out infinite;}
+    @keyframes o3{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.3)}}
+    .hero-logo{width:min(360px,78vw);position:relative;z-index:2;animation:lf 5s ease-in-out infinite;filter:drop-shadow(0 0 50px #FAFF0040);margin-bottom:28px;}
+    .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,10vw,116px);letter-spacing:8px;line-height:0.9;position:relative;z-index:2;background:linear-gradient(135deg,#fff 30%,#FAFF00 70%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .hero-sub{font-family:'Space Mono',monospace;font-size:clamp(9px,1.8vw,12px);letter-spacing:4px;color:var(--cyan);text-transform:uppercase;position:relative;z-index:2;margin:16px 0 36px;}
+    .hero-sub span{color:var(--muted);margin:0 8px;}
+    .hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;position:relative;z-index:2;}
+    .btn-p{background:var(--yellow);color:#000;border:none;padding:14px 30px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;cursor:pointer;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-p:hover{background:var(--cyan);transform:translateY(-3px);box-shadow:0 12px 40px #00E5FF40;}
+    .btn-s{background:transparent;color:var(--text);border:1px solid var(--border);padding:14px 30px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-s:hover{border-color:var(--yellow);color:var(--yellow);transform:translateY(-3px);}
+    .hero-stats{display:flex;gap:56px;margin-top:70px;position:relative;z-index:2;flex-wrap:wrap;justify-content:center;}
+    .stat-n{font-family:'Bebas Neue',sans-serif;font-size:50px;color:var(--yellow);line-height:1;}
+    .stat-l{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+    .scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:2;}
+    .scroll-hint span{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;}
+    .scroll-line{width:1px;height:38px;background:linear-gradient(to bottom,var(--yellow),transparent);animation:sl 2s ease-in-out infinite;}
+    @keyframes sl{0%{opacity:0;transform:scaleY(0);transform-origin:top}50%{opacity:1;transform:scaleY(1)}100%{opacity:0;transform:scaleY(0);transform-origin:bottom}}
+
+    /* SECTIONS */
+    section{padding:90px 40px;max-width:1200px;margin:0 auto;}
+    .sec-tag{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--yellow);display:inline-flex;align-items:center;gap:10px;margin-bottom:12px;}
+    .sec-tag::before{content:'';width:22px;height:1px;background:var(--yellow);}
+    .sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,6vw,70px);letter-spacing:4px;color:#fff;line-height:1;}
+    .sec-title span{color:var(--yellow);}
+    .sec-desc{margin-top:14px;color:var(--muted);font-size:16px;max-width:540px;line-height:1.7;}
+    .sec-head{margin-bottom:56px;}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);}
+    .grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px;}
+
+    /* PROJECT CARDS */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all 0.3s;position:relative;overflow:hidden;cursor:pointer;}
+    .card:hover{transform:translateY(-6px);border-color:var(--cc,var(--yellow));box-shadow:0 20px 60px color-mix(in srgb,var(--cc,var(--yellow)) 18%,transparent);}
+    .card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,color-mix(in srgb,var(--cc,var(--yellow)) 20%,transparent) 0%,transparent 70%);border-radius:0 0 0 100%;transition:all 0.3s;}
+    .card:hover::before{width:120px;height:120px;}
+    .ctag{display:inline-block;padding:3px 10px;border-radius:4px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;background:color-mix(in srgb,var(--cc,var(--yellow)) 15%,transparent);border:1px solid color-mix(in srgb,var(--cc,var(--yellow)) 40%,transparent);color:var(--cc,var(--yellow));margin-bottom:14px;}
+    .ctitle{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:1px;color:#fff;margin-bottom:4px;}
+    .csub{font-size:13px;color:var(--muted);margin-bottom:16px;}
+    .wave-bars{display:flex;align-items:center;gap:3px;height:30px;}
+    .wb{width:3px;border-radius:2px;animation:wb var(--d,.6s) ease-in-out infinite alternate;animation-delay:var(--dl,0s);}
+    @keyframes wb{from{height:4px;opacity:0.4}to{height:26px;opacity:1}}
+    .pbtn{width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:transform 0.2s;}
+    .pbtn:hover{transform:scale(1.12);}
+
+    /* CINEMA MARQUEE */
+    .cm{overflow:hidden;padding:18px 0;margin:-8px 0 28px;}
+    .cmi{display:flex;gap:56px;animation:ticker 14s linear infinite;white-space:nowrap;}
+    .cg{font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:6px;color:var(--border);flex-shrink:0;}
+    .cg.hl{-webkit-text-fill-color:transparent;-webkit-text-stroke:1px var(--yellow);}
+
+    /* ABOUT */
+    .ag{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
+    .alw{background:linear-gradient(135deg,var(--card),#1a1a20);border:1px solid var(--border);border-radius:20px;padding:36px;text-align:center;position:relative;overflow:hidden;}
+    .alw::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#FAFF0010 0%,transparent 70%);}
+    .alw img{width:100%;max-width:290px;position:relative;z-index:1;}
+    .badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;}
+    .badge{background:var(--card);border:1px solid var(--border);border-radius:100px;padding:7px 15px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;transition:all 0.2s;}
+    .badge:hover{border-color:var(--yellow);color:var(--yellow);}
+    .at p{color:var(--muted);line-height:1.8;margin-bottom:14px;font-size:16px;}
+    .at p strong{color:var(--text);}
+
+    /* RECRUIT */
+    .rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;}
+    .rc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px;transition:all 0.3s;position:relative;overflow:hidden;}
+    .rc:hover{transform:translateY(-5px);border-color:var(--rc,var(--yellow));box-shadow:0 16px 50px color-mix(in srgb,var(--rc,var(--yellow)) 18%,transparent);}
+    .rc-icon{font-size:30px;margin-bottom:14px;display:block;}
+    .rc-title{font-family:'Bebas Neue',sans-serif;font-size:23px;letter-spacing:1.5px;color:#fff;margin-bottom:4px;}
+    .rc-dept{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:16px;}
+    .rc-badge{display:inline-block;padding:6px 18px;border-radius:100px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;font-weight:700;}
+    .rc-apply{margin-top:18px;width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);padding:10px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+    .rc-apply:hover{border-color:var(--rc,var(--yellow));color:var(--rc,var(--yellow));}
+
+    /* CONTACT */
+    .cw{display:grid;grid-template-columns:1fr 1.2fr;gap:56px;align-items:start;}
+    .ci h3{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;margin-bottom:14px;color:#fff;}
+    .ci p{color:var(--muted);line-height:1.8;margin-bottom:24px;font-size:15px;}
+    .citem{display:flex;align-items:center;gap:12px;margin-bottom:13px;font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);}
+    .citem span:first-child{font-size:17px;}
+    .citem a{color:var(--muted);text-decoration:none;transition:color 0.2s;}
+    .citem a:hover{color:var(--yellow);}
+    .biz-stack{display:flex;flex-direction:column;gap:16px;margin-top:28px;}
+    .biz-card{border-radius:14px;overflow:hidden;border:1px solid var(--border);transition:all 0.3s;cursor:pointer;}
+    .biz-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px #FAFF0020;border-color:var(--yellow);}
+    .biz-card img{width:100%;display:block;}
+
+    /* FORM */
+    .fwrap{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:30px;}
+    .fg{margin-bottom:16px;}
+    .fl{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+    .fi,.fta,.fsel{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:13px 15px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;}
+    .fi:focus,.fta:focus,.fsel:focus{border-color:var(--yellow);box-shadow:0 0 0 3px #FAFF0015;}
+    .fta{min-height:110px;resize:vertical;}
+    .fsel option{background:#111;}
+
+    /* ══════════════════
+       CAPTCHA
+    ══════════════════ */
+    .captcha-box{
+      background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+      padding:16px 18px;margin-bottom:16px;
+      display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    }
+    .captcha-box.ok{border-color:var(--green);}
+    .captcha-box.err{border-color:var(--orange);animation:shake 0.4s ease;}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+    .captcha-question{font-family:'Space Mono',monospace;font-size:14px;color:var(--text);flex:1;min-width:140px;}
+    .captcha-question strong{color:var(--yellow);font-size:18px;}
+    .captcha-input{width:80px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'Space Mono',monospace;font-size:16px;outline:none;text-align:center;transition:border-color 0.2s;}
+    .captcha-input:focus{border-color:var(--yellow);}
+    .captcha-refresh{background:transparent;border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--muted);cursor:pointer;font-size:16px;transition:all 0.2s;}
+    .captcha-refresh:hover{border-color:var(--cyan);color:var(--cyan);}
+    .captcha-status{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;margin-top:8px;width:100%;}
+    .captcha-status.ok{color:var(--green);}
+    .captcha-status.err{color:var(--orange);}
+
+    .sbtn{width:100%;background:var(--yellow);color:#000;border:none;padding:15px;font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:4px;cursor:pointer;border-radius:8px;transition:all 0.2s;margin-top:4px;}
+    .sbtn:hover{background:var(--cyan);transform:translateY(-2px);box-shadow:0 10px 30px #00E5FF40;}
+    .sbtn.sent{background:var(--green);}
+    .sbtn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+
+    /* FOOTER */
+    footer{border-top:1px solid var(--border);padding:36px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;max-width:1200px;margin:0 auto;}
+    footer img{height:34px;filter:drop-shadow(0 0 8px #FAFF0040);}
+    .ft{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-align:center;}
+    .fl2{display:flex;gap:18px;}
+    .fl2 a{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+    .fl2 a:hover{color:var(--yellow);}
+
+    /* PAGE SECTIONS */
+    .ps{display:none;}
+    .ps.active{display:block;}
+
+    /* BOTTOM TAB BAR */
+    .tab-bar{
+      position:fixed;bottom:0;left:0;right:0;z-index:200;
+      background:rgba(6,6,8,0.97);backdrop-filter:blur(20px);
+      border-top:1px solid var(--border);
+      display:flex;align-items:stretch;
+      height:64px;
+      padding-bottom:env(safe-area-inset-bottom);
+    }
+    .tab-item{
+      flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:4px;cursor:pointer;transition:all 0.2s;
+      border:none;background:transparent;color:var(--muted);
+      font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;
+      text-decoration:none;padding:8px 4px;
+    }
+    .tab-item:hover,.tab-item.active{color:var(--yellow);}
+    .tab-item .ti{font-size:20px;transition:transform 0.2s;}
+    .tab-item.active .ti{transform:scale(1.2);}
+    .tab-item .tl{font-size:9px;letter-spacing:1px;}
+
+    /* ROBOT CAPTCHA */
+    .robot-check{
+      display:flex;align-items:center;gap:14px;
+      background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+      padding:16px 18px;margin-bottom:16px;cursor:pointer;
+      transition:all 0.2s;user-select:none;
+    }
+    .robot-check:hover{border-color:var(--yellow);}
+    .robot-check.verified{border-color:var(--green);background:color-mix(in srgb,var(--green) 8%,var(--bg2));}
+    .robot-check.failed{border-color:var(--orange);animation:shake 0.4s ease;}
+    .robot-checkbox{
+      width:26px;height:26px;border:2px solid var(--border);border-radius:4px;
+      flex-shrink:0;display:flex;align-items:center;justify-content:center;
+      transition:all 0.3s;font-size:16px;
+    }
+    .robot-check.verified .robot-checkbox{background:var(--green);border-color:var(--green);color:#000;}
+    .robot-check.pending .robot-checkbox{border-color:var(--yellow);}
+    .robot-label{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:1px;}
+    .robot-check.verified .robot-label{color:var(--green);}
+    .robot-spinner{
+      width:26px;height:26px;border:2px solid var(--border);
+      border-top-color:var(--yellow);border-radius:50%;
+      animation:spin 0.8s linear infinite;flex-shrink:0;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .robot-logo{margin-left:auto;font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:1px;text-align:right;line-height:1.4;}
+
+    /* AUDIO PLAYER */
+    .audio-player{
+      background:linear-gradient(135deg,#0a0a0f,#111118);
+      border:1px solid var(--border);border-radius:14px;
+      padding:20px 22px;margin-top:8px;
+    }
+    .ap-track{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+    .ap-cover{
+      width:48px;height:48px;border-radius:10px;
+      background:linear-gradient(135deg,var(--cc,var(--yellow)),#000);
+      display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
+    }
+    .ap-info{flex:1;min-width:0;}
+    .ap-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .ap-artist{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;}
+    .ap-controls{display:flex;align-items:center;gap:10px;}
+    .ap-btn{
+      width:44px;height:44px;border-radius:50%;background:var(--cc,var(--yellow));
+      border:none;cursor:pointer;font-size:16px;
+      display:flex;align-items:center;justify-content:center;
+      transition:transform 0.2s;flex-shrink:0;
+    }
+    .ap-btn:hover{transform:scale(1.08);}
+    .ap-progress-wrap{flex:1;cursor:pointer;}
+    .ap-progress-bg{height:4px;background:var(--border);border-radius:2px;position:relative;}
+    .ap-progress-fill{height:100%;background:var(--cc,var(--yellow));border-radius:2px;width:0%;transition:width 0.1s linear;}
+    .ap-times{display:flex;justify-content:space-between;margin-top:5px;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);}
+    .ap-vol{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;}
+    .ap-vol input{flex:1;accent-color:var(--cc,var(--yellow));cursor:pointer;}
+
+    /* ADMIN PANEL */
+    .admin-overlay{position:fixed;inset:0;z-index:8000;background:rgba(6,6,8,0.97);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);display:none;}
+    .admin-overlay.open{display:flex;}
+    .admin-box{background:var(--card);border:1px solid var(--yellow);border-radius:20px;padding:36px;width:min(520px,94vw);max-height:90vh;overflow-y:auto;}
+    .admin-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--yellow);margin-bottom:6px;}
+    .admin-sub{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:24px;}
+    .admin-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+    .atab{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all 0.2s;}
+    .atab.active,.atab:hover{background:var(--yellow);color:#000;border-color:var(--yellow);}
+    .admin-section{display:none;}
+    .admin-section.active{display:block;}
+    .afield{margin-bottom:14px;}
+    .afield label{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;}
+    .afield input,.afield select,.afield textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+    .afield input:focus,.afield select:focus,.afield textarea:focus{border-color:var(--yellow);}
+    .afield textarea{min-height:80px;resize:vertical;}
+    .afield select option{background:#111;}
+    .abtn{width:100%;background:var(--yellow);color:#000;border:none;padding:13px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;cursor:pointer;border-radius:8px;transition:all 0.2s;margin-top:4px;}
+    .abtn:hover{background:var(--cyan);}
+    .abtn.del{background:#FF6B00;color:#fff;margin-top:8px;}
+    .abtn.del:hover{background:#cc5500;}
+    .admin-list{display:flex;flex-direction:column;gap:10px;margin-top:16px;max-height:260px;overflow-y:auto;}
+    .admin-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+    .admin-item-info{flex:1;min-width:0;}
+    .admin-item-title{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#fff;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .admin-item-sub{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
+    .admin-item-del{background:#FF6B0020;border:1px solid #FF6B0050;color:#FF6B00;font-size:14px;padding:6px 10px;border-radius:6px;cursor:pointer;transition:all 0.2s;flex-shrink:0;}
+    .admin-item-del:hover{background:#FF6B00;color:#fff;}
+    .admin-success{background:#39FF1420;border:1px solid #39FF1460;border-radius:8px;padding:10px 14px;font-family:'Space Mono',monospace;font-size:11px;color:var(--green);margin-top:10px;display:none;}
+    .admin-btn-float{position:fixed;bottom:80px;right:20px;z-index:500;background:var(--yellow);color:#000;border:none;width:48px;height:48px;border-radius:50%;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(250,255,0,0.4);transition:all 0.2s;display:none;}
+    .admin-btn-float:hover{transform:scale(1.1);}
+    .admin-btn-float.visible{display:flex;align-items:center;justify-content:center;}
+
+    @media(max-width:800px){    @media(max-width:800px){
+      nav{padding:0 16px;}
+      .nav-links{display:none;}
+      section{padding:60px 18px;padding-bottom:80px;}
+      .ag,.cw{grid-template-columns:1fr;}
+      footer{flex-direction:column;text-align:center;margin-bottom:64px;}
+      .hero-stats{gap:24px;}
+      .login-box{padding:32px 24px;}
+      .hero{padding-bottom:120px;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="cring"></div>
+
+<!-- ═══════════════════════════════════════
+     LOGIN OVERLAY
+═══════════════════════════════════════ -->
+<div id="login-overlay">
+  <div class="login-bg-grid"></div>
+  <div class="login-orb lo1"></div>
+  <div class="login-orb lo2"></div>
+
+  <div class="login-box">
+    <img src="logo.png" alt="JVB Productions" class="login-logo">
+    <div class="login-title">JVB PRODUCTIONS</div>
+    <p class="login-sub">Espace membres</p>
+
+    <div class="invite-badge">
+      <span class="invite-dot"></span>
+      Accès réservé aux membres
+    </div>
+
+    <!-- TABS -->
+    <div class="login-tabs">
+      <button class="ltab active" id="tab-login" onclick="switchTab('login')">🔑 CONNEXION</button>
+      <button class="ltab" id="tab-register" onclick="switchTab('register')">✨ INSCRIPTION</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="form-login">
+      <div class="lfield">
+        <label>Email</label>
+        <input type="email" id="l-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="lfield">
+        <label>Mot de passe</label>
+        <input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="lerr" id="l-err">❌ Email ou mot de passe incorrect.</div>
+      <button class="login-btn" onclick="doLogin()">SE CONNECTER →</button>
+      <p style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-align:center;margin-top:14px;">Pas encore de compte ? <span onclick="switchTab('register')" style="color:var(--yellow);cursor:pointer;text-decoration:underline;">S'inscrire</span></p>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="form-register" style="display:none;">
+      <div class="lfield">
+        <label>Nom complet</label>
+        <input type="text" id="r-name" placeholder="Ton prénom et nom">
+      </div>
+      <div class="lfield">
+        <label>Email</label>
+        <input type="email" id="r-email" placeholder="votre@email.com">
+      </div>
+      <div class="lfield">
+        <label>Mot de passe</label>
+        <input type="password" id="r-pass" placeholder="Min. 6 caractères">
+      </div>
+      <div class="lfield">
+        <label>Vous êtes…</label>
+        <select id="r-role" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;outline:none;">
+          <option>Fan / Visiteur</option>
+          <option>Artiste musicien</option>
+          <option>Réalisateur / Cinéaste</option>
+          <option>Youtubeur / Créateur</option>
+          <option>Bénévole souhaitant rejoindre JVB</option>
+        </select>
+      </div>
+      <div class="lerr" id="r-err">Remplissez tous les champs.</div>
+      <div class="lsuccess" id="r-ok">✅ Bienvenue dans JVB Productions !</div>
+      <button class="login-btn" onclick="doRegister()">CRÉER MON COMPTE ✨</button>
+      <p style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-align:center;margin-top:14px;">Déjà un compte ? <span onclick="switchTab('login')" style="color:var(--yellow);cursor:pointer;text-decoration:underline;">Se connecter</span></p>
+    </div>
+
+    <div class="login-divider"></div>
+
+    <!-- Netlify Identity fallback -->
+    <button class="login-netlify-btn" onclick="netlifyIdentity.open()">
+      🔐 CONNEXION VIA NETLIFY IDENTITY
+    </button>
+
+    <p class="login-note" style="margin-top:12px;">En vous connectant, vous acceptez les conditions d'utilisation de JVB Productions.</p>
+
+    <!-- YouTube Links -->
+    <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:20px;">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--yellow);margin-bottom:14px;text-align:center;">NOS CHAÎNES YOUTUBE</div>
+      <a href="https://youtube.com/@jvbprods" target="_blank" style="display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;text-decoration:none;transition:all 0.2s;margin-bottom:10px;" onmouseover="this.style.borderColor='#FF0000';this.style.background='#FF000010'" onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg2)'">
+        <span style="font-size:22px;">▶️</span>
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:#fff;">Chaîne de l'association</div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">@jvbprods</div>
+        </div>
+        <span style="margin-left:auto;font-size:14px;color:var(--muted);">→</span>
+      </a>
+      <a href="https://youtube.com/@ZolireMusicOfficial" target="_blank" style="display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='#FF0000';this.style.background='#FF000010'" onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg2)'">
+        <span style="font-size:22px;">🎤</span>
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:#fff;">Chaîne du créateur</div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">@ZolireMusicOfficial</div>
+        </div>
+        <span style="margin-left:auto;font-size:14px;color:var(--muted);">→</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MAIN SITE
+═══════════════════════════════════════ -->
+<div id="main-site" style="display:none;">
+
+<!-- NAV -->
+<nav>
+  <img src="logo.png" alt="JVB Productions" class="nav-logo">
+  <ul class="nav-links">
+    <li><a href="#" class="nl active" data-s="home">Accueil</a></li>
+    <li><a href="#" class="nl" data-s="music">Musique</a></li>
+    <li><a href="#" class="nl" data-s="cinema">Cinéma</a></li>
+    <li><a href="#" class="nl" data-s="about">À propos</a></li>
+    <li><a href="#" class="nl" data-s="artistes">Artistes</a></li>
+    <li><a href="#" class="nl" data-s="actu">Actualités</a></li>
+    <li><a href="#" class="nl" data-s="galerie">Galerie</a></li>
+    <li><a href="#" class="nl" data-s="agenda">Agenda</a></li>
+    <li><a href="#" class="nl" data-s="podcast">Podcast</a></li>
+    <li><a href="#" class="nl" data-s="temoignages">Témoignages</a></li>
+    <li><a href="#" class="nl" data-s="recruit">Recrutement</a></li>
+    <li><a href="#" class="nl" data-s="contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="user-pill" id="user-pill">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <span id="user-name">Membre</span>
+    </div>
+    <button class="nav-cta" onclick="doLogout()">DÉCONNEXION</button>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <div class="ticker-item"><span class="tdot" style="background:var(--yellow)"></span>PRODUCTION MUSICALE</div>
+    <div class="ticker-item"><span class="tdot" style="background:var(--cyan)"></span>CINÉMATOGRAPHIE</div>
+    <div class="ticker-item"><span class="tdot" style="background:var(--green)"></span>PODCAST</div>
+    <div class="ticker-item"><span class="tdot" style="background:var(--orange)"></span>YOUTUBE @JVBPRODS</div>
+    <div class="ticker-item"><span class="tdot" style="background:var(--yellow)"></span>RIOM · 63200</div>
+    <div class="ticker-item"><span class="tdot" style="background:var(--cyan)"></span>BÉNÉVOLAT · REJOIGNEZ-NOUS</div>
+    <div class="ticker-item"><span class="tdot" style="background:var(--yellow)"></span>PRODUCTION MUSICALE</div>
+    <div class="ticker-item"><span class="tdot" style="background:var(--cyan)"></span>CINÉMATOGRAPHIE</div>
+    <div class="ticker-item"><span class="tdot" style="background:var(--green)"></span>PODCAST</div>
+    <div class="ticker-item"><span class="tdot" style="background:var(--orange)"></span>YOUTUBE @JVBPRODS</div>
+    <div class="ticker-item"><span class="tdot" style="background:var(--yellow)"></span>RIOM · 63200</div>
+    <div class="ticker-item"><span class="tdot" style="background:var(--cyan)"></span>BÉNÉVOLAT · REJOIGNEZ-NOUS</div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="sec-home" class="ps active">
+  <div class="hero">
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <img src="logo.png" alt="JVB Productions" class="hero-logo">
+    <h1 class="hero-title">JVB<br>PRODUCTIONS</h1>
+    <p class="hero-sub">Musique <span>·</span> Cinéma <span>·</span> Podcast <span>·</span> YouTube</p>
+    <div class="hero-btns">
+      <a href="#" class="btn-p" onclick="go('music');return false;">🎵 PROJETS MUSICAUX</a>
+      <a href="#" class="btn-s" onclick="go('recruit');return false;">🤝 NOUS REJOINDRE</a>
+    </div>
+
+    <!-- YouTube links on home -->
+    <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;justify-content:center;position:relative;z-index:2;">
+      <a href="https://youtube.com/@jvbprods" target="_blank" style="display:flex;align-items:center;gap:10px;background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.3);border-radius:100px;padding:10px 20px;text-decoration:none;transition:all 0.2s;backdrop-filter:blur(10px);" onmouseover="this.style.background='rgba(255,0,0,0.2)';this.style.borderColor='#FF0000'" onmouseout="this.style.background='rgba(255,0,0,0.1)';this.style.borderColor='rgba(255,0,0,0.3)'">
+        <span style="font-size:18px;">▶️</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:#fff;">Chaîne de l'association</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,0.5);">@jvbprods</div>
+        </div>
+      </a>
+      <a href="https://youtube.com/@ZolireMusicOfficial" target="_blank" style="display:flex;align-items:center;gap:10px;background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.3);border-radius:100px;padding:10px 20px;text-decoration:none;transition:all 0.2s;backdrop-filter:blur(10px);" onmouseover="this.style.background='rgba(255,0,0,0.2)';this.style.borderColor='#FF0000'" onmouseout="this.style.background='rgba(255,0,0,0.1)';this.style.borderColor='rgba(255,0,0,0.3)'">
+        <span style="font-size:18px;">🎤</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:#fff;">Chaîne du créateur</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,0.5);">@ZolireMusicOfficial</div>
+        </div>
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-n" id="c1">0</div><div class="stat-l">Projets musicaux</div></div>
+      <div><div class="stat-n" id="c2">0</div><div class="stat-l">Productions vidéo</div></div>
+      <div><div class="stat-n" id="c3">0</div><div class="stat-l">Artistes accompagnés</div></div>
+      <div><div class="stat-n" id="c4">0</div><div class="stat-l">Années d'existence</div></div>
+    </div>
+    <div class="scroll-hint"><span>Défiler</span><div class="scroll-line"></div></div>
+  </div>
+
+  <!-- STATS BAND -->
+  <div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:40px;">
+    <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:24px;text-align:center;">
+      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--yellow);">2+</div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Années d'existence</div></div>
+      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--cyan);">5+</div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Artistes accompagnés</div></div>
+      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--green);">10+</div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Projets réalisés</div></div>
+      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--orange);">100%</div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Passion</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MUSIC -->
+<div id="sec-music" class="ps">
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">Production musicale</div>
+      <h2 class="sec-title">NOS <span>PROJETS</span><br>MUSICAUX</h2>
+      <p class="sec-desc">Du rap à l'électronique, JVB Productions accompagne les artistes de la région.</p>
+    </div>
+    <!-- FEATURED TRACK: Gare de Pluie -->
+    <div class="audio-player" style="--cc:#FAFF00;margin-bottom:32px;">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--yellow);margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+        <span style="width:18px;height:1px;background:var(--yellow);display:inline-block;"></span>
+        TITRE EXCLUSIF · RAP
+      </div>
+      <div class="ap-track">
+        <div class="ap-cover" style="background:linear-gradient(135deg,#FAFF00,#1a1a00);">🎤</div>
+        <div class="ap-info">
+          <div class="ap-title">Gare de Pluie</div>
+          <div class="ap-artist">JVB Productions · 2026</div>
+        </div>
+      </div>
+      <audio id="audio-gdp" src="Gare_de_Pluie.mp3" preload="metadata"></audio>
+      <div class="ap-controls">
+        <button class="ap-btn" id="ap-play" onclick="togglePlay()" style="background:#FAFF00;color:#000;">▶</button>
+        <div class="ap-progress-wrap" onclick="seekAudio(event)">
+          <div class="ap-progress-bg">
+            <div class="ap-progress-fill" id="ap-fill"></div>
+          </div>
+          <div class="ap-times">
+            <span id="ap-cur">0:00</span>
+            <span id="ap-dur">--:--</span>
+          </div>
+        </div>
+      </div>
+      <div class="ap-vol">
+        <span>🔈</span>
+        <input type="range" min="0" max="1" step="0.02" value="0.8" oninput="document.getElementById('audio-gdp').volume=this.value">
+        <span>🔊</span>
+      </div>
+    </div>
+
+    <!-- FEATURED TRACK: Fortitititissimo (POP) -->
+    <div class="audio-player" style="--cc:#00E5FF;margin-bottom:32px;">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+        <span style="width:18px;height:1px;background:var(--cyan);display:inline-block;"></span>
+        TITRE EXCLUSIF · POP
+      </div>
+      <div class="ap-track">
+        <div class="ap-cover" style="background:linear-gradient(135deg,#00E5FF,#001a2a);">🎵</div>
+        <div class="ap-info">
+          <div class="ap-title">Fortitititissimo</div>
+          <div class="ap-artist">JVB Productions · 2026</div>
+        </div>
+      </div>
+      <audio id="audio-fort" src="Fortitititissimo.mp3" preload="metadata"></audio>
+      <div class="ap-controls">
+        <button class="ap-btn" id="ap-play-fort" onclick="togglePlayFort()" style="background:#00E5FF;color:#000;">▶</button>
+        <div class="ap-progress-wrap" onclick="seekAudioFort(event)">
+          <div class="ap-progress-bg">
+            <div class="ap-progress-fill" id="ap-fill-fort" style="background:var(--cyan)"></div>
+          </div>
+          <div class="ap-times">
+            <span id="ap-cur-fort">0:00</span>
+            <span id="ap-dur-fort">--:--</span>
+          </div>
+        </div>
+      </div>
+      <div class="ap-vol">
+        <span>🔈</span>
+        <input type="range" min="0" max="1" step="0.02" value="0.8" oninput="document.getElementById('audio-fort').volume=this.value" style="accent-color:var(--cyan)">
+        <span>🔊</span>
+      </div>
+    </div>
+
+    <div class="grid2" id="music-grid"></div>
+  </section>
+</div>
+
+<!-- CINEMA -->
+<div id="sec-cinema" class="ps">
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">Production cinématographique</div>
+      <h2 class="sec-title">NOS <span>CRÉATIONS</span><br>VISUELLES</h2>
+      <p class="sec-desc">Courts-métrages, clips musicaux, documentaires — nous donnons vie aux histoires.</p>
+    </div>
+    <div class="cm"><div class="cmi">
+      <span class="cg">FICTION</span><span class="cg hl">DOCUMENTAIRE</span>
+      <span class="cg">CLIP MUSICAL</span><span class="cg hl">COURT-MÉTRAGE</span>
+      <span class="cg">PODCAST</span><span class="cg hl">YOUTUBE</span>
+      <span class="cg">FICTION</span><span class="cg hl">DOCUMENTAIRE</span>
+    </div></div>
+    <!-- YOUTUBE VIDEO PLAYER -->
+    <div style="margin-bottom:40px;">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--yellow);margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+        <span style="width:18px;height:1px;background:var(--yellow);display:inline-block;"></span>
+        NOTRE CHAÎNE YOUTUBE
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+        <button onclick="loadVideo('jvbprods')" style="background:var(--card);border:1px solid #FF000050;color:#FF0000;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:10px 20px;border-radius:8px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#FF000020'" onmouseout="this.style.background='var(--card)'">▶ @JVBPRODS</button>
+        <button onclick="loadVideo('ZolireMusicOfficial')" style="background:var(--card);border:1px solid #FF000050;color:#FF6B00;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:10px 20px;border-radius:8px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#FF6B0020'" onmouseout="this.style.background='var(--card)'">▶ @ZOLIREMUSIC</button>
+      </div>
+      <div id="yt-container" style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;">
+          <div style="font-size:48px;margin-bottom:12px;">▶️</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--muted);">SÉLECTIONNEZ UNE CHAÎNE</div>
+          <p style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-top:8px;">Cliquez sur un bouton ci-dessus</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2" id="cinema-grid"></div>
+  </section>
+</div>
+
+<!-- ABOUT -->
+<div id="sec-about" class="ps">
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">Notre histoire</div>
+      <h2 class="sec-title">À PROPOS <span>DE</span><br>JVB PROD</h2>
+    </div>
+    <div class="ag">
+      <div>
+        <div class="alw"><img src="logo.png" alt="JVB Productions"></div>
+        <div class="badges">
+          <div class="badge">🎵 Musique</div><div class="badge">🎬 Cinéma</div>
+          <div class="badge">🎙️ Podcast</div><div class="badge">▶️ YouTube</div>
+          <div class="badge">📍 Riom 63200</div><div class="badge">🤝 Associatif</div>
+        </div>
+      </div>
+      <div class="at">
+        <p><strong>JVB Productions</strong> est une unité associative dédiée à la production musicale et cinématographique, basée à <strong>Riom, Auvergne-Rhône-Alpes</strong>.</p>
+        <p>Notre mission : <strong>donner les moyens aux artistes locaux</strong> de créer, produire et diffuser leurs œuvres — musique, cinéma, podcast, YouTube.</p>
+        <p>Nous mettons à disposition du matériel professionnel et un <strong>accompagnement artistique personnalisé</strong>.</p>
+        <p>JVB Productions, c'est avant tout <strong>une famille</strong> — des créateurs qui partagent la même passion.</p>
+        <div style="margin-top:28px;"><a href="#" class="btn-p" onclick="go('recruit');return false;">🤝 REJOINDRE L'ASSOCIATION</a></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ARTISTES -->
+<div id="sec-artistes" class="ps">
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">Nos talents</div>
+      <h2 class="sec-title">LES <span>ARTISTES</span><br>JVB PROD</h2>
+      <p class="sec-desc">Rappeurs, chanteurs, réalisateurs — découvrez les créateurs qui font vivre JVB Productions.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px;">
+
+      <!-- Matéo -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:all 0.3s;cursor:pointer;" onmouseover="this.style.transform='translateY(-8px)';this.style.borderColor='var(--yellow)';this.style.boxShadow='0 24px 60px rgba(250,255,0,0.15)'" onmouseout="this.style.transform='none';this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+        <div style="position:relative;overflow:hidden;">
+          <img src="mateo.jpg" alt="Matéo Bassuel-Sauvaire" style="width:100%;height:280px;object-fit:cover;object-position:center 15%;display:block;transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(6,6,8,0.9));"></div>
+          <div style="position:absolute;bottom:14px;left:16px;display:flex;gap:6px;">
+            <span style="background:#FAFF00;color:#000;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:2px;padding:3px 10px;border-radius:100px;">RAP</span>
+            <span style="background:#00E5FF;color:#000;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:2px;padding:3px 10px;border-radius:100px;">YOUTUBE</span>
+          </div>
+        </div>
+        <div style="padding:20px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#fff;margin-bottom:2px;">Matéo Bassuel-Sauvaire</div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">Youtubeur & Rappeur</div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:16px;">Créateur de contenu et rappeur au sein de JVB Productions. Entre flows percutants et vidéos YouTube, Matéo incarne la nouvelle génération de la création indépendante.</p>
+          <a href="https://youtube.com/@blueberrizzyt" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid #FF0000;color:#FF0000;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;padding:8px 16px;border-radius:8px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#FF0000';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#FF0000'">▶ VOIR LA CHAÎNE</a>
+        </div>
+      </div>
+
+      <!-- Enzo -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-8px)';this.style.borderColor='var(--yellow)';this.style.boxShadow='0 24px 60px rgba(250,255,0,0.15)'" onmouseout="this.style.transform='none';this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+        <div style="position:relative;overflow:hidden;">
+          <img src="enzo.jpg" alt="Enzo Rodrigues" style="width:100%;height:280px;object-fit:cover;object-position:center 20%;display:block;transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(6,6,8,0.9));"></div>
+          <div style="position:absolute;bottom:14px;left:16px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span style="background:var(--yellow);color:#000;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:2px;padding:3px 10px;border-radius:100px;">PDG</span>
+            <span style="background:#39FF14;color:#000;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:2px;padding:3px 10px;border-radius:100px;">RÉALISATEUR</span>
+          </div>
+        </div>
+        <div style="padding:20px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#fff;margin-bottom:2px;">Enzo Rodrigues</div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--yellow);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">Youtubeur · Ingénieur son · Monteur · Réalisateur · PDG</div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:16px;">PDG et fondateur de JVB Productions. Youtubeur, ingénieur son, monteur et réalisateur, Enzo est à la tête de tous les projets musicaux et cinématographiques de l'association.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <a href="https://youtube.com/@ZolireMusicOfficial" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid #FF0000;color:#FF0000;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;padding:8px 16px;border-radius:8px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#FF0000';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#FF0000'">▶ @ZOLIREMUSIC</a>
+            <a href="mailto:enzorodrigues6312@gmail.com" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--yellow);color:var(--yellow);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;padding:8px 16px;border-radius:8px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--yellow)';this.style.color='#000'" onmouseout="this.style.background='transparent';this.style.color='var(--yellow)'">✉ CONTACTER</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timéo -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-8px)';this.style.borderColor='var(--cyan)';this.style.boxShadow='0 24px 60px rgba(0,229,255,0.15)'" onmouseout="this.style.transform='none';this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+        <div style="height:280px;background:linear-gradient(135deg,#001a2a,#0a0a08);display:flex;align-items:center;justify-content:center;font-size:80px;">🎬</div>
+        <div style="padding:20px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#fff;margin-bottom:2px;">Timéo Daa-Zdundji</div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">Réalisateur & Co-fondateur</div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:16px;">Réalisateur passionné, Timéo dirige les productions cinématographiques de l'association depuis Mozac.</p>
+          <a href="mailto:jvb.productionss@gmail.com" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;padding:8px 16px;border-radius:8px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--cyan)';this.style.color='#000'" onmouseout="this.style.background='transparent';this.style.color='var(--cyan)'">✉ CONTACTER</a>
+        </div>
+      </div>
+
+      <!-- Rejoindre -->
+      <div style="background:linear-gradient(135deg,#FAFF0008,#00E5FF05);border:1px dashed var(--border);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;min-height:420px;cursor:pointer;transition:all 0.3s;" onclick="go('recruit')" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:48px;margin-bottom:16px;">➕</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:#fff;margin-bottom:8px;">VOUS ?</div>
+        <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:20px;">Rejoignez JVB Productions et faites partie de l'aventure créative.</p>
+        <span style="background:var(--yellow);color:#000;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;padding:10px 24px;border-radius:8px;">NOUS REJOINDRE</span>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- ACTUALITÉS -->
+<div id="sec-actu" class="ps">
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">News</div>
+      <h2 class="sec-title">ACTUA<span>LITÉS</span></h2>
+      <p class="sec-desc">Les dernières nouvelles de JVB Productions — sorties, projets, événements.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px;" id="actu-list">
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;gap:24px;align-items:flex-start;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="background:#FAFF0020;border:1px solid #FAFF0040;border-radius:12px;padding:14px 18px;text-align:center;flex-shrink:0;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--yellow);line-height:1;">17</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">MAI 2026</div>
+        </div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">MUSIQUE · NOUVEAU SON</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#fff;margin-bottom:8px;">«Gare de Pluie» disponible</div>
+          <p style="color:var(--muted);font-size:15px;line-height:1.7;">Le nouveau son RAP de JVB Productions est disponible à l'écoute. Découvrez «Gare de Pluie» dans la section Musique.</p>
+        </div>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;gap:24px;align-items:flex-start;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--cyan)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="background:#00E5FF20;border:1px solid #00E5FF40;border-radius:12px;padding:14px 18px;text-align:center;flex-shrink:0;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--cyan);line-height:1;">17</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">MAI 2026</div>
+        </div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--yellow);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">MUSIQUE · POP</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#fff;margin-bottom:8px;">«Fortitititissimo» en ligne</div>
+          <p style="color:var(--muted);font-size:15px;line-height:1.7;">Notre titre POP est maintenant disponible sur le site. Écoutez «Fortitititissimo» dans la section Musique.</p>
+        </div>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;gap:24px;align-items:flex-start;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="background:#39FF1420;border:1px solid #39FF1440;border-radius:12px;padding:14px 18px;text-align:center;flex-shrink:0;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--green);line-height:1;">01</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">MAI 2026</div>
+        </div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">ASSOCIATION · LANCEMENT</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#fff;margin-bottom:8px;">JVB Productions lance son site officiel</div>
+          <p style="color:var(--muted);font-size:15px;line-height:1.7;">JVB Productions est fier d'annoncer le lancement de son site officiel. Musique, cinéma, recrutement — tout est ici.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- GALERIE -->
+<div id="sec-galerie" class="ps">
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">Photos & Vidéos</div>
+      <h2 class="sec-title">NOTRE <span>GALERIE</span></h2>
+      <p class="sec-desc">Coulisses, tournages, sessions studio — les moments qui font JVB Productions.</p>
+    </div>
+    <!-- Placeholder galerie -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">
+      <div style="border-radius:12px;overflow:hidden;aspect-ratio:1;cursor:pointer;position:relative;" onmouseover="this.querySelector('.goverlay').style.opacity='1'" onmouseout="this.querySelector('.goverlay').style.opacity='0'">
+        <img src="mateo.jpg" style="width:100%;height:100%;object-fit:cover;object-position:center top;">
+        <div class="goverlay" style="position:absolute;inset:0;background:rgba(250,255,0,0.15);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;">
+          <span style="font-size:32px;">🔍</span>
+        </div>
+      </div>
+      <div style="border-radius:12px;overflow:hidden;aspect-ratio:1;cursor:pointer;position:relative;" onmouseover="this.querySelector('.goverlay').style.opacity='1'" onmouseout="this.querySelector('.goverlay').style.opacity='0'">
+        <img src="card-enzo.png" style="width:100%;height:100%;object-fit:cover;object-position:left center;">
+        <div class="goverlay" style="position:absolute;inset:0;background:rgba(0,229,255,0.15);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;">
+          <span style="font-size:32px;">🔍</span>
+        </div>
+      </div>
+      <div style="border-radius:12px;overflow:hidden;aspect-ratio:1;cursor:pointer;position:relative;" onmouseover="this.querySelector('.goverlay').style.opacity='1'" onmouseout="this.querySelector('.goverlay').style.opacity='0'">
+        <img src="card-timeo.png" style="width:100%;height:100%;object-fit:cover;object-position:left center;">
+        <div class="goverlay" style="position:absolute;inset:0;background:rgba(57,255,20,0.15);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;">
+          <span style="font-size:32px;">🔍</span>
+        </div>
+      </div>
+      <div style="border-radius:12px;background:var(--card);border:1px dashed var(--border);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;" onclick="go('contact')" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-size:36px;">📸</span>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:var(--muted);text-align:center;">ENVOYER<br>VOS PHOTOS</div>
+      </div>
+    </div>
+
+    <div style="margin-top:40px;background:linear-gradient(135deg,#FAFF0010,#00E5FF08);border:1px solid #FAFF0030;border-radius:14px;padding:24px;text-align:center;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--yellow);margin-bottom:8px;">📸 CONTRIBUEZ À LA GALERIE</div>
+      <p style="color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;margin-bottom:16px;">Vous avez des photos de tournages ou de sessions JVB ? Envoyez-les nous !</p>
+      <a href="mailto:jvb.productionss@gmail.com" class="btn-p" style="text-decoration:none;display:inline-block;">✉ ENVOYER VOS PHOTOS</a>
+    </div>
+  </section>
+</div>
+
+<!-- AGENDA -->
+<div id="sec-agenda" class="ps">
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">Planning</div>
+      <h2 class="sec-title">AGENDA <span>JVB</span><br>PRODUCTIONS</h2>
+      <p class="sec-desc">Prochains événements, tournages et sorties — ne ratez rien !</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <div style="background:var(--card);border:1px solid var(--border);border-left:4px solid var(--yellow);border-radius:12px;padding:24px;display:flex;align-items:center;gap:20px;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderLeftColor='var(--yellow)';this.style.borderColor='var(--border)';this.style.borderLeftColor='var(--yellow)'">
+        <div style="text-align:center;min-width:60px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--yellow);line-height:1;">JUN</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;">2026</div>
+        </div>
+        <div style="width:1px;height:50px;background:var(--border);"></div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--yellow);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">🎬 TOURNAGE</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#fff;margin-bottom:4px;">Court-métrage «L'Écho» — Phase 2</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">Riom, Auvergne-Rhône-Alpes</div>
+        </div>
+        <span style="margin-left:auto;background:#FAFF0020;color:var(--yellow);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;padding:5px 12px;border-radius:100px;white-space:nowrap;">À VENIR</span>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-left:4px solid var(--cyan);border-radius:12px;padding:24px;display:flex;align-items:center;gap:20px;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--cyan)'" onmouseout="this.style.borderColor='var(--border)';this.style.borderLeftColor='var(--cyan)'">
+        <div style="text-align:center;min-width:60px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--cyan);line-height:1;">JUL</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;">2026</div>
+        </div>
+        <div style="width:1px;height:50px;background:var(--border);"></div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">🎵 SORTIE MUSICALE</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#fff;margin-bottom:4px;">Nouveau single — Matéo Bassuel-Sauvaire</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">Sur toutes les plateformes</div>
+        </div>
+        <span style="margin-left:auto;background:#00E5FF20;color:var(--cyan);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;padding:5px 12px;border-radius:100px;white-space:nowrap;">EN COURS</span>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:12px;padding:24px;display:flex;align-items:center;gap:20px;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.borderLeftColor='var(--green)'">
+        <div style="text-align:center;min-width:60px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--green);line-height:1;">SEP</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;">2026</div>
+        </div>
+        <div style="width:1px;height:50px;background:var(--border);"></div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">🎙️ PODCAST</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#fff;margin-bottom:4px;">Lancement du Podcast JVB</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">En ligne sur YouTube & plateformes</div>
+        </div>
+        <span style="margin-left:auto;background:#39FF1420;color:var(--green);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;padding:5px 12px;border-radius:100px;white-space:nowrap;">PRÉVU</span>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;margin-top:48px;padding:28px;background:var(--card);border:1px dashed var(--border);border-radius:14px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;">UN PROJET À PROPOSER ?</div>
+      <a href="#" onclick="go('contact');return false;" class="btn-p" style="text-decoration:none;display:inline-block;">📬 NOUS CONTACTER</a>
+    </div>
+  </section>
+</div>
+
+<!-- PODCAST -->
+<div id="sec-podcast" class="ps">
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">Audio & Talk</div>
+      <h2 class="sec-title">PODCAST <span>JVB</span><br>PRODUCTIONS</h2>
+      <p class="sec-desc">Des discussions autour de la musique, du cinéma et de la création indépendante.</p>
+    </div>
+
+    <!-- Bientôt -->
+    <div style="background:linear-gradient(135deg,var(--card),#0d0d14);border:1px solid var(--border);border-radius:20px;padding:60px 40px;text-align:center;position:relative;overflow:hidden;margin-bottom:40px;">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#FAFF0008 0%,transparent 70%);pointer-events:none;"></div>
+      <div style="font-size:64px;margin-bottom:20px;">🎙️</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5vw,52px);letter-spacing:4px;color:#fff;margin-bottom:12px;">BIENTÔT DISPONIBLE</div>
+      <p style="color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1px;max-width:480px;margin:0 auto 28px;line-height:1.8;">Le podcast JVB Productions arrive ! Musique, cinéma, interviews d'artistes, coulisses des projets… Restez connectés.</p>
+      <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+        <a href="https://youtube.com/@jvbprods" target="_blank" class="btn-p" style="text-decoration:none;display:inline-block;">▶ YOUTUBE @JVBPRODS</a>
+        <a href="mailto:jvb.productionss@gmail.com" class="btn-s" style="text-decoration:none;display:inline-block;">💌 NOUS PROPOSER UN SUJET</a>
+      </div>
+    </div>
+
+    <!-- Thèmes prévus -->
+    <div style="margin-top:16px;">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--yellow);margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+        <span style="width:18px;height:1px;background:var(--yellow);display:inline-block;"></span>THÈMES PRÉVUS
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;gap:12px;align-items:center;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)'">
+          <span style="font-size:24px;">🎵</span>
+          <div><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:#fff;">La musique indépendante</div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">Épisode 1</div></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;gap:12px;align-items:center;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'" onmouseout="this.style.borderColor='var(--border)'">
+          <span style="font-size:24px;">🎬</span>
+          <div><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:#fff;">Faire du cinéma sans budget</div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">Épisode 2</div></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;gap:12px;align-items:center;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+          <span style="font-size:24px;">🤝</span>
+          <div><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:#fff;">Créer une association</div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">Épisode 3</div></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;gap:12px;align-items:center;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+          <span style="font-size:24px;">📱</span>
+          <div><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:#fff;">YouTube & réseaux sociaux</div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">Épisode 4</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- TÉMOIGNAGES -->
+<div id="sec-temoignages" class="ps">
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">Ils en parlent</div>
+      <h2 class="sec-title">TÉMOI<span>GNAGES</span></h2>
+      <p class="sec-desc">Ce que disent les membres et artistes qui ont rejoint l'aventure JVB Productions.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;">
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--yellow)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'">
+        <div style="font-size:36px;color:var(--yellow);font-family:Georgia,serif;line-height:1;margin-bottom:14px;">"</div>
+        <p style="color:var(--text);font-size:15px;line-height:1.8;margin-bottom:20px;font-style:italic;">JVB Productions m'a donné les moyens de concrétiser mes projets musicaux. Une équipe passionnée et bienveillante !</p>
+        <div style="display:flex;align-items:center;gap:12px;border-top:1px solid var(--border);padding-top:16px;">
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--yellow),#1a1a00);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-family:'Bebas Neue',sans-serif;font-size:18px;">M</div>
+          <div><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:#fff;">Matéo B-S</div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--yellow);">Youtubeur & Rappeur</div></div>
+        </div>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--cyan)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'">
+        <div style="font-size:36px;color:var(--cyan);font-family:Georgia,serif;line-height:1;margin-bottom:14px;">"</div>
+        <p style="color:var(--text);font-size:15px;line-height:1.8;margin-bottom:20px;font-style:italic;">Une vraie famille. On s'entraide, on apprend ensemble. C'est exactement ça l'esprit JVB.</p>
+        <div style="display:flex;align-items:center;gap:12px;border-top:1px solid var(--border);padding-top:16px;">
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),#001a2a);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-family:'Bebas Neue',sans-serif;font-size:18px;">T</div>
+          <div><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:#fff;">Timéo D-Z</div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);">Réalisateur</div></div>
+        </div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#FAFF0008,#00E5FF05);border:1px dashed var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:all 0.3s;" onclick="go('contact')" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:40px;margin-bottom:14px;">✍️</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:#fff;margin-bottom:8px;">VOTRE AVIS</div>
+        <p style="color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:18px;">Vous avez travaillé avec JVB Productions ? Partagez votre expérience !</p>
+        <span style="background:var(--yellow);color:#000;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:10px 22px;border-radius:8px;">TÉMOIGNER</span>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- RECRUTEMENT -->
+<div id="sec-recruit" class="ps">
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">Postes ouverts</div>
+      <h2 class="sec-title">REJOIGNEZ<br><span>L'ÉQUIPE</span></h2>
+      <p class="sec-desc">JVB Productions recrute des bénévoles passionnés. Peu importe votre niveau.</p>
+    </div>
+    <div style="background:linear-gradient(135deg,#FAFF0010,#00E5FF08);border:1px solid #FAFF0030;border-radius:12px;padding:18px 24px;margin-bottom:40px;display:flex;align-items:center;gap:14px;">
+      <span style="font-size:22px;">📢</span>
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--yellow);">TOUS LES POSTES SONT EN BÉNÉVOLAT</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-top:3px;">Envie de nous rejoindre ? Contactez-nous via la page Contact.</div>
+      </div>
+    </div>
+    <div class="rg" id="recruit-grid"></div>
+    <div style="text-align:center;margin-top:56px;">
+      <p style="color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;margin-bottom:18px;">Votre profil n'est pas listé ? Contactez-nous quand même !</p>
+      <a href="#" class="btn-p" onclick="go('contact');return false;">📬 NOUS CONTACTER</a>
+    </div>
+  </section>
+</div>
+
+<!-- CONTACT -->
+<div id="sec-contact" class="ps">
+  <section>
+    <div class="sec-head">
+      <div class="sec-tag">Nous joindre</div>
+      <h2 class="sec-title">CONTACTEZ<br><span>JVB PROD</span></h2>
+    </div>
+    <div style="max-width:700px;">
+      <div>
+        <div class="ci">
+          <h3>ON VOUS ÉCOUTE</h3>
+          <p>Artiste, réalisateur, podcaster ou passionné ? Rejoignez l'aventure JVB Productions !</p>
+          <div class="citem"><span>📍</span><span>8 ter avenue Virlogeux, 63200 Riom</span></div>
+          <div class="citem"><span>📧</span><a href="mailto:jvb.productionss@gmail.com">jvb.productionss@gmail.com</a></div>
+          <div class="citem"><span>📞</span><span>06-22-30-65-10</span></div>
+          <div class="citem"><span>🎬</span><a href="https://youtube.com/@jvbprods" target="_blank">YouTube : @jvbprods</a></div>
+        </div>
+
+        <!-- YouTube Cards -->
+        <div style="margin-top:24px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--yellow);margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+            <span style="width:18px;height:1px;background:var(--yellow);display:inline-block;"></span>
+            NOS CHAÎNES YOUTUBE
+          </div>
+          <a href="https://youtube.com/@jvbprods" target="_blank" style="display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-decoration:none;transition:all 0.2s;margin-bottom:10px;" onmouseover="this.style.borderColor='#FF0000';this.style.boxShadow='0 8px 30px rgba(255,0,0,0.15)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+            <div style="width:44px;height:44px;background:#FF0000;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">▶️</div>
+            <div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:#fff;">Chaîne de l'association</div>
+              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">youtube.com/@jvbprods</div>
+            </div>
+            <span style="margin-left:auto;color:var(--muted);font-size:18px;">→</span>
+          </a>
+          <a href="https://youtube.com/@ZolireMusicOfficial" target="_blank" style="display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='#FF0000';this.style.boxShadow='0 8px 30px rgba(255,0,0,0.15)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+            <div style="width:44px;height:44px;background:linear-gradient(135deg,#FF0000,#8B0000);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🎤</div>
+            <div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:#fff;">Chaîne du créateur</div>
+              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">youtube.com/@ZolireMusicOfficial</div>
+            </div>
+            <span style="margin-left:auto;color:var(--muted);font-size:18px;">→</span>
+          </a>
+        </div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--yellow);margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+            <span style="width:18px;height:1px;background:var(--yellow);display:inline-block;"></span>
+            CARTES DE CONTACT
+          </div>
+          <div class="biz-stack">
+            <div class="biz-card"><img src="card-enzo.png" alt="Enzo Rodrigues"></div>
+            <div class="biz-card"><img src="card-timeo.png" alt="Timéo Daa-Zdundji"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="divider"></div>
+<footer>
+  <img src="logo.png" alt="JVB Productions">
+  <div class="ft">© 2026 JVB PRODUCTIONS · TOUS DROITS RÉSERVÉS<br>UNITÉ ASSOCIATIVE · RIOM, AUVERGNE-RHÔNE-ALPES</div>
+  <div class="fl2">
+    <a href="https://youtube.com/@jvbprods" target="_blank">YouTube</a>
+    <a href="mailto:jvb.productionss@gmail.com">Email</a>
+    <a href="#">Mentions légales</a>
+  </div>
+</footer>
+
+<!-- BOTTOM TAB BAR -->
+<div class="tab-bar" id="tab-bar">
+  <button class="tab-item active" data-s="home" onclick="go('home');setTab(this)">
+    <span class="ti">🏠</span><span class="tl">Accueil</span>
+  </button>
+  <button class="tab-item" data-s="music" onclick="go('music');setTab(this)">
+    <span class="ti">🎵</span><span class="tl">Musique</span>
+  </button>
+  <button class="tab-item" data-s="cinema" onclick="go('cinema');setTab(this)">
+    <span class="ti">🎬</span><span class="tl">Cinéma</span>
+  </button>
+  <button class="tab-item" data-s="artistes" onclick="go('artistes');setTab(this)">
+    <span class="ti">🎤</span><span class="tl">Artistes</span>
+  </button>
+  <button class="tab-item" data-s="actu" onclick="go('actu');setTab(this)">
+    <span class="ti">📰</span><span class="tl">Actu</span>
+  </button>
+  <button class="tab-item" data-s="recruit" onclick="go('recruit');setTab(this)">
+    <span class="ti">🤝</span><span class="tl">Rejoindre</span>
+  </button>
+  <button class="tab-item" data-s="contact" onclick="go('contact');setTab(this)">
+    <span class="ti">📬</span><span class="tl">Contact</span>
+  </button>
+  <button class="tab-item" id="admin-tab-btn" onclick="openAdminGate()" style="display:none;">
+    <span class="ti">⚙️</span><span class="tl">Admin</span>
+  </button>
+</div>
+
+<!-- NETLIFY NOTIFY FORMS (hidden) -->
+<form name="inscription" netlify netlify-honeypot="bot-field" hidden>
+  <input type="text" name="nom">
+  <input type="email" name="email">
+  <input type="text" name="type">
+</form>
+<form name="admin-access" netlify netlify-honeypot="bot-field" hidden>
+  <input type="email" name="email">
+  <input type="text" name="action">
+</form>
+
+<!-- ADMIN GATE MODAL -->
+<div id="admin-gate" style="position:fixed;inset:0;z-index:8500;background:rgba(6,6,8,0.97);display:none;align-items:center;justify-content:center;backdrop-filter:blur(12px);">
+  <div style="background:var(--card);border:1px solid var(--yellow);border-radius:20px;padding:40px;width:min(400px,92vw);text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">🔐</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--yellow);margin-bottom:6px;">ACCÈS ADMIN</div>
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:28px;">JVB PRODUCTIONS · ZONE RESTREINTE</div>
+    <div style="margin-bottom:16px;text-align:left;">
+      <label style="display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;">Code administrateur</label>
+      <input type="password" id="gate-code" placeholder="••••••" maxlength="10"
+        style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;color:var(--text);font-family:'Space Mono',monospace;font-size:20px;letter-spacing:6px;text-align:center;outline:none;transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='var(--yellow)'" onblur="this.style.borderColor='var(--border)'"
+        onkeydown="if(event.key==='Enter')checkAdminGate()">
+    </div>
+    <div id="gate-err" style="color:#FF6B00;font-family:'Space Mono',monospace;font-size:11px;margin-bottom:12px;display:none;">❌ Code incorrect</div>
+    <button onclick="checkAdminGate()" style="width:100%;background:var(--yellow);color:#000;border:none;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;cursor:pointer;border-radius:10px;transition:all 0.2s;margin-bottom:10px;" onmouseover="this.style.background='var(--cyan)'" onmouseout="this.style.background='var(--yellow)'">ENTRER</button>
+    <button onclick="document.getElementById('admin-gate').style.display='none'" style="width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);padding:10px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;border-radius:10px;">ANNULER</button>
+  </div>
+</div>
+
+<!-- ADMIN FLOAT BUTTON (only visible to admin) -->
+<button class="admin-btn-float" id="admin-float-btn" onclick="openAdmin()" title="Panneau Admin">⚙️</button>
+
+<!-- ADMIN OVERLAY -->
+<div class="admin-overlay" id="admin-overlay">
+  <div class="admin-box">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+      <div>
+        <div class="admin-title">⚙️ PANNEAU ADMIN</div>
+        <div class="admin-sub">JVB PRODUCTIONS · ACCÈS RESTREINT</div>
+      </div>
+      <button onclick="closeAdmin()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:18px;padding:6px 12px;border-radius:8px;cursor:pointer;">✕</button>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="atab active" onclick="switchAdminTab('music')">🎵 MUSIQUE</button>
+      <button class="atab" onclick="switchAdminTab('cinema')">🎬 CINÉMA</button>
+      <button class="atab" onclick="switchAdminTab('actu')">📰 ACTUALITÉ</button>
+    </div>
+
+    <!-- MUSIC TAB -->
+    <div class="admin-section active" id="atab-music">
+      <div class="afield"><label>Titre du son</label><input type="text" id="a-music-title" placeholder="Ex: Gare de Pluie"></div>
+      <div class="afield"><label>Artiste</label><input type="text" id="a-music-artist" placeholder="Ex: JVB feat. Kollectif"></div>
+      <div class="afield">
+        <label>Genre</label>
+        <select id="a-music-genre">
+          <option>RAP</option><option>POP</option><option>R&B</option>
+          <option>ELECTRONIC</option><option>REGGAE</option><option>AUTRE</option>
+        </select>
+      </div>
+      <div class="afield"><label>Lien YouTube (optionnel)</label><input type="text" id="a-music-yt" placeholder="https://youtube.com/watch?v=..."></div>
+      <button class="abtn" onclick="addMusic()">➕ PUBLIER LE SON</button>
+      <div class="admin-success" id="a-music-ok">✅ Son publié avec succès !</div>
+      <div class="admin-list" id="a-music-list"></div>
+    </div>
+
+    <!-- CINEMA TAB -->
+    <div class="admin-section" id="atab-cinema">
+      <div class="afield"><label>Titre du projet</label><input type="text" id="a-cine-title" placeholder="Ex: Court-métrage «L'Écho»"></div>
+      <div class="afield">
+        <label>Type</label>
+        <select id="a-cine-type">
+          <option>COURT-MÉTRAGE</option><option>CLIP MUSICAL</option>
+          <option>DOCUMENTAIRE</option><option>TEASER</option><option>AUTRE</option>
+        </select>
+      </div>
+      <div class="afield"><label>Durée</label><input type="text" id="a-cine-dur" placeholder="Ex: 18 min"></div>
+      <div class="afield"><label>Lien YouTube</label><input type="text" id="a-cine-yt" placeholder="https://youtube.com/watch?v=..."></div>
+      <button class="abtn" onclick="addCinema()">➕ PUBLIER LE FILM</button>
+      <div class="admin-success" id="a-cine-ok">✅ Projet publié avec succès !</div>
+      <div class="admin-list" id="a-cine-list"></div>
+    </div>
+
+    <!-- ACTU TAB -->
+    <div class="admin-section" id="atab-actu">
+      <div class="afield"><label>Titre de l'actu</label><input type="text" id="a-actu-title" placeholder="Ex: Nouveau single disponible"></div>
+      <div class="afield">
+        <label>Catégorie</label>
+        <select id="a-actu-cat">
+          <option>MUSIQUE</option><option>CINÉMA</option><option>PODCAST</option>
+          <option>ASSOCIATION</option><option>ÉVÉNEMENT</option>
+        </select>
+      </div>
+      <div class="afield"><label>Contenu</label><textarea id="a-actu-content" placeholder="Décrivez l'actualité..."></textarea></div>
+      <button class="abtn" onclick="addActu()">➕ PUBLIER L'ACTU</button>
+      <div class="admin-success" id="a-actu-ok">✅ Actualité publiée !</div>
+      <div class="admin-list" id="a-actu-list"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main-site -->
+
+<script>
+/* ═══════════════════════════════
+   CURSOR
+═══════════════════════════════ */
+const cur=document.getElementById('cur'),cring=document.getElementById('cring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;cring.style.left=rx+'px';cring.style.top=ry+'px';requestAnimationFrame(a);})();
+
+/* ═══════════════════════════════
+   AUTH SYSTEM
+═══════════════════════════════ */
+const USERS_KEY='jvb_users';
+const SESSION_KEY='jvb_session';
+
+// Comptes pré-enregistrés (toujours disponibles)
+const DEFAULT_USERS=[
+  {email:'jvb.productionss@gmail.com', name:'Enzo JVB',  pass:btoa('jvbprod2026')},
+  {email:'timeo@jvbproductions.fr',     name:'Timeo JVB', pass:btoa('jvbprod2026')},
+];
+
+function getUsers(){
+  try{
+    const stored=JSON.parse(localStorage.getItem(USERS_KEY))||[];
+    DEFAULT_USERS.forEach(du=>{
+      if(!stored.find(u=>u.email===du.email)) stored.push(du);
+    });
+    return stored;
+  }catch{return DEFAULT_USERS.slice();}
+}
+function saveUsers(u){localStorage.setItem(USERS_KEY,JSON.stringify(u));}
+function getSession(){
+  try{return sessionStorage.getItem(SESSION_KEY);}catch{return null;}
+}
+function setSession(email,name){
+  try{sessionStorage.setItem(SESSION_KEY,JSON.stringify({email,name}));}catch{}
+  updateUserPill(name,email);
+}
+
+function updateUserPill(name,email){
+  document.getElementById('user-avatar').textContent=name?name[0].toUpperCase():'?';
+  document.getElementById('user-name').textContent=name||email||'Membre';
+}
+
+function switchTab(t){
+  document.getElementById('tab-login').classList.toggle('active',t==='login');
+  document.getElementById('tab-register').classList.toggle('active',t==='register');
+  document.getElementById('form-login').style.display=t==='login'?'block':'none';
+  document.getElementById('form-register').style.display=t==='register'?'block':'none';
+}
+
+function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  const err=document.getElementById('l-err');
+  if(!email||!pass){
+    err.textContent='❌ Remplis email et mot de passe.';
+    err.style.display='block';
+    setTimeout(()=>err.style.display='none',3000);
+    return;
+  }
+  const users=getUsers();
+  const user=users.find(u=>u.email===email&&u.pass===btoa(pass));
+  if(user){
+    setSession(email,user.name);
+    showMain();
+    checkAdminOnLogin(email);
+  } else {
+    err.textContent='❌ Email ou mot de passe incorrect.';
+    err.style.display='block';
+    setTimeout(()=>err.style.display='none',4000);
+  }
+}
+
+function doRegister(){
+  const name=document.getElementById('r-name').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  const pass=document.getElementById('r-pass').value;
+  const role=document.getElementById('r-role')?document.getElementById('r-role').value:'';
+  const err=document.getElementById('r-err');
+  const ok=document.getElementById('r-ok');
+  if(!name||!email||pass.length<6){
+    err.textContent=pass.length<6?'Mot de passe trop court (min. 6 car.).':'Remplissez tous les champs.';
+    err.style.display='block';
+    setTimeout(()=>err.style.display='none',3000);
+    return;
+  }
+  const users=getUsers();
+  if(users.find(u=>u.email===email)){
+    err.textContent='Cet email est déjà utilisé.';
+    err.style.display='block';
+    setTimeout(()=>err.style.display='none',3000);
+    return;
+  }
+  users.push({email,name,pass:btoa(pass),role});
+  saveUsers(users);
+  // Envoyer email via EmailJS
+  emailjs.send('service_vscdpxh', 'template_vi13srh', {
+    sujet: '🎵 Nouvelle inscription JVB Productions',
+    nom: name,
+    email: email,
+    role: role||'Visiteur',
+    message: 'Nouvelle inscription sur JVB Productions !\nNom : '+name+'\nEmail : '+email+'\nProfil : '+(role||'Visiteur')
+  }).catch(()=>{});
+  ok.style.display='block';
+  setTimeout(()=>{ok.style.display='none';switchTab('login');document.getElementById('l-email').value=email;},2500);
+}
+
+function doLogout(){
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('main-site').style.display='none';
+  document.getElementById('login-overlay').classList.remove('hidden');
+}
+
+function showMain(){
+  document.getElementById('login-overlay').classList.add('hidden');
+  document.getElementById('main-site').style.display='block';
+  const s=JSON.parse(getSession()||'{}');
+  if(s.name) updateUserPill(s.name,s.email);
+  initCounters();
+  checkAdmin();
+  setTimeout(()=>{renderExtraMusic();renderExtraCinema();renderExtraActu();},100);
+}
+
+// Check session on load
+window.addEventListener('load',()=>{
+  const s=getSession();
+  if(s){
+    const data=JSON.parse(s);
+    updateUserPill(data.name,data.email);
+    showMain();
+  }
+  // Netlify Identity
+  if(window.netlifyIdentity){
+    netlifyIdentity.on('login',user=>{
+      const name=user.user_metadata?.full_name||user.email;
+      setSession(user.email,name);
+      netlifyIdentity.close();
+      showMain();
+    });
+  }
+  genCaptcha();
+});
+
+/* ═══════════════════════════════
+   NAVIGATION
+═══════════════════════════════ */
+document.querySelectorAll('.nl').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();go(a.dataset.s);}));
+
+/* ═══════════════════════════════
+   DATA
+═══════════════════════════════ */
+const MUSIC=[
+  {t:"Album «Volcans»",s:"JVB feat. Kollectif",tag:"RAP · AFROTRAP · 2025",c:"#FAFF00"},
+  {t:"Single «Nuit Blanche»",s:"Mara.O",tag:"R&B · SOUL · 2025",c:"#00E5FF"},
+  {t:"EP «Frequencies»",s:"DJ Kross",tag:"ELECTRONIC · 2024",c:"#39FF14"},
+  {t:"Mixtape «Roots»",s:"Collectif Sud",tag:"REGGAE · DANCEHALL · 2024",c:"#FF6B00"},
+];
+const CINEMA=[
+  {t:"Court-métrage «L'Écho»",s:"18 min · Fiction",tag:"FICTION · 2025",c:"#FAFF00"},
+  {t:"Clip «Résistance»",s:"4 min · Clip musical",tag:"CLIP · 2025",c:"#00E5FF"},
+  {t:"Docu «Terres Noires»",s:"42 min · Documentaire",tag:"DOCUMENTAIRE · 2024",c:"#39FF14"},
+  {t:"Teaser «Silence»",s:"2 min · Teaser",tag:"TEASER · 2024",c:"#FF6B00"},
+];
+const RECRUIT=[
+  {t:"Réalisateur / Réalisatrice",d:"Cinéma",i:"🎬",c:"#FF6B00"},
+  {t:"Cadreur / Opérateur",d:"Production",i:"📷",c:"#FF6B00"},
+  {t:"Motion Designer",d:"Post-Production",i:"✨",c:"#00E5FF"},
+  {t:"Monteur Audio / Sound Designer",d:"Podcast",i:"🎧",c:"#39FF14"},
+  {t:"Créateur de Contenu YouTube",d:"Digital",i:"▶️",c:"#00E5FF"},
+  {t:"Chargé(e) de Production",d:"Gestion de Projet",i:"📋",c:"#39FF14"},
+];
+
+// Render
+const mg=document.getElementById('music-grid');
+MUSIC.forEach(p=>{
+  const bars=Array.from({length:16}).map((_,i)=>`<div class="wb" style="--d:${0.4+i%5*0.1}s;--dl:${i*0.05}s;background:${p.c}"></div>`).join('');
+  mg.innerHTML+=`<div class="card" style="--cc:${p.c}"><div class="ctag">${p.tag}</div><div class="ctitle">${p.t}</div><div class="csub">${p.s}</div><div style="display:flex;align-items:center;gap:10px;"><button class="pbtn" style="background:${p.c}" onclick="this.textContent=this.textContent==='▶'?'⏸':'▶'">▶</button><div class="wave-bars">${bars}</div></div></div>`;
+});
+const cg=document.getElementById('cinema-grid');
+CINEMA.forEach(p=>{
+  cg.innerHTML+=`<div class="card" style="--cc:${p.c}"><div class="ctag">${p.tag}</div><div class="ctitle">${p.t}</div><div class="csub">${p.s}</div><button style="background:transparent;border:1px solid ${p.c};color:${p.c};border-radius:8px;padding:8px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;margin-top:4px;transition:all 0.2s;" onmouseover="this.style.background='${p.c}';this.style.color='#000'" onmouseout="this.style.background='transparent';this.style.color='${p.c}'">▶ VOIR LE PROJET</button></div>`;
+});
+const rg=document.getElementById('recruit-grid');
+RECRUIT.forEach(r=>{
+  const tc=r.c==='#FAFF00'?'#000':'#fff';
+  rg.innerHTML+=`<div class="rc" style="--rc:${r.c}"><span class="rc-icon">${r.i}</span><div class="rc-title">${r.t}</div><div class="rc-dept">${r.d}</div><span class="rc-badge" style="background:${r.c};color:${tc}">Bénévolat</span><button class="rc-apply" onclick="go('contact')">POSTULER →</button></div>`;
+});
+
+/* ═══════════════════════════════
+   TAB BAR
+═══════════════════════════════ */
+function setTab(el){
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+// Sync tab bar with nav clicks
+const origGo=go;
+function go(s){
+  document.querySelectorAll('.ps').forEach(p=>p.classList.remove('active'));
+  document.getElementById('sec-'+s).classList.add('active');
+  document.querySelectorAll('.nl').forEach(a=>a.classList.toggle('active',a.dataset.s===s));
+  const tabEl=document.querySelector('.tab-item[data-s="'+s+'"]');
+  setTab(tabEl);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ═══════════════════════════════
+   ROBOT CAPTCHA
+═══════════════════════════════ */
+let robotVerified=false;
+const CHALLENGES=[
+  {q:"Quelle couleur est le logo JVB ?",opts:["Rouge","Jaune","Bleu","Vert"],a:1},
+  {q:"Combien font 7 + 5 ?",opts:["10","11","12","13"],a:2},
+  {q:"Quelle année sommes-nous ?",opts:["2023","2024","2025","2026"],a:3},
+  {q:"JVB est basé dans quelle ville ?",opts:["Lyon","Riom","Paris","Bordeaux"],a:1},
+  {q:"Combien font 9 × 3 ?",opts:["24","27","30","21"],a:1},
+];
+let currentChallenge=null;
+
+function startRobotCheck(){
+  if(robotVerified) return;
+  const box=document.getElementById('robot-box');
+  const cb=document.getElementById('robot-cb');
+  const lbl=document.getElementById('robot-label');
+  const challenge=document.getElementById('robot-challenge');
+
+  // Show spinner
+  box.className='robot-check pending';
+  cb.innerHTML='<div class="robot-spinner"></div>';
+  lbl.textContent='Vérification en cours...';
+
+  setTimeout(()=>{
+    // Show challenge
+    cb.innerHTML='';
+    lbl.textContent='Répondez à la question';
+    currentChallenge=CHALLENGES[Math.floor(Math.random()*CHALLENGES.length)];
+    document.getElementById('ch-question').textContent=currentChallenge.q;
+    const answersDiv=document.getElementById('ch-answers');
+    answersDiv.innerHTML='';
+    currentChallenge.opts.forEach((opt,i)=>{
+      const btn=document.createElement('button');
+      btn.textContent=opt;
+      btn.style.cssText='background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:8px;font-family:Space Mono,monospace;font-size:12px;cursor:pointer;transition:all 0.2s;';
+      btn.onmouseover=()=>btn.style.borderColor='var(--yellow)';
+      btn.onmouseout=()=>btn.style.borderColor='var(--border)';
+      btn.onclick=()=>answerChallenge(i);
+      answersDiv.appendChild(btn);
+    });
+    challenge.style.display='block';
+  },1200);
+}
+
+function answerChallenge(idx){
+  const box=document.getElementById('robot-box');
+  const cb=document.getElementById('robot-cb');
+  const lbl=document.getElementById('robot-label');
+  const challenge=document.getElementById('robot-challenge');
+
+  if(idx===currentChallenge.a){
+    robotVerified=true;
+    box.className='robot-check verified';
+    cb.innerHTML='✓';
+    lbl.textContent='Vérifié — Je ne suis pas un robot';
+    challenge.style.display='none';
+  } else {
+    box.className='robot-check failed';
+    lbl.textContent='Mauvaise réponse, réessayez';
+    setTimeout(()=>{
+      box.className='robot-check';
+      cb.innerHTML='';
+      lbl.textContent='Je ne suis pas un robot';
+      challenge.style.display='none';
+      robotVerified=false;
+    },1500);
+  }
+}
+
+function checkCaptcha(){ return robotVerified; }
+function genCaptcha(){ robotVerified=false; document.getElementById('robot-box').className='robot-check'; document.getElementById('robot-cb').innerHTML=''; document.getElementById('robot-label').textContent='Je ne suis pas un robot'; document.getElementById('robot-challenge').style.display='none'; }
+
+/* LOGIN PAGE ROBOT */
+let loginRobotVerified=false;
+
+function startLoginRobotCheck(){
+  if(loginRobotVerified) return;
+  const box=document.getElementById('login-robot-box');
+  const cb=document.getElementById('login-robot-cb');
+  const lbl=document.getElementById('login-robot-label');
+  box.className='robot-check pending';
+  cb.innerHTML='<div class="robot-spinner"></div>';
+  lbl.textContent='Vérification en cours...';
+  setTimeout(()=>{
+    cb.innerHTML='';
+    lbl.textContent='Répondez à la question';
+    const ch=CHALLENGES[Math.floor(Math.random()*CHALLENGES.length)];
+    document.getElementById('lch-question').textContent=ch.q;
+    const answersDiv=document.getElementById('lch-answers');
+    answersDiv.innerHTML='';
+    ch.opts.forEach((opt,i)=>{
+      const btn=document.createElement('button');
+      btn.textContent=opt;
+      btn.style.cssText='background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:8px;font-family:Space Mono,monospace;font-size:12px;cursor:pointer;transition:all 0.2s;';
+      btn.onmouseover=()=>btn.style.borderColor='var(--yellow)';
+      btn.onmouseout=()=>btn.style.borderColor='var(--border)';
+      btn.onclick=()=>{
+        if(i===ch.a){
+          loginRobotVerified=true;
+          box.className='robot-check verified';
+          cb.innerHTML='✓';
+          lbl.textContent='Vérifié — Je ne suis pas un robot';
+          document.getElementById('login-robot-challenge').style.display='none';
+        } else {
+          box.className='robot-check failed';
+          lbl.textContent='Mauvaise réponse, réessayez';
+          setTimeout(()=>{
+            box.className='robot-check';cb.innerHTML='';
+            lbl.textContent='Je ne suis pas un robot';
+            document.getElementById('login-robot-challenge').style.display='none';
+            loginRobotVerified=false;
+          },1500);
+        }
+      };
+      answersDiv.appendChild(btn);
+    });
+    document.getElementById('login-robot-challenge').style.display='block';
+  },1200);
+}
+
+/* ═══════════════════════════════
+   AUDIO PLAYER
+═══════════════════════════════ */
+const audio=document.getElementById('audio-gdp');
+const fill=document.getElementById('ap-fill');
+const curT=document.getElementById('ap-cur');
+const durT=document.getElementById('ap-dur');
+const playBtn=document.getElementById('ap-play');
+
+function fmt(s){const m=Math.floor(s/60);const ss=Math.floor(s%60);return m+':'+(ss<10?'0':'')+ss;}
+
+audio.addEventListener('loadedmetadata',()=>{ durT.textContent=fmt(audio.duration); });
+audio.addEventListener('timeupdate',()=>{
+  if(!audio.duration) return;
+  const pct=(audio.currentTime/audio.duration)*100;
+  fill.style.width=pct+'%';
+  curT.textContent=fmt(audio.currentTime);
+});
+audio.addEventListener('ended',()=>{ playBtn.textContent='▶'; fill.style.width='0%'; curT.textContent='0:00'; });
+
+function togglePlay(){
+  if(audio.paused){
+    audioFort.pause(); playBtnFort.textContent='▶';
+    audio.play(); playBtn.textContent='⏸';
+  } else {
+    audio.pause(); playBtn.textContent='▶';
+  }
+}
+function seekAudio(e){
+  const rect=e.currentTarget.getBoundingClientRect();
+  const pct=(e.clientX-rect.left)/rect.width;
+  audio.currentTime=pct*audio.duration;
+}
+
+/* FORTITITITISSIMO PLAYER */
+const audioFort=document.getElementById('audio-fort');
+const fillFort=document.getElementById('ap-fill-fort');
+const curTFort=document.getElementById('ap-cur-fort');
+const durTFort=document.getElementById('ap-dur-fort');
+const playBtnFort=document.getElementById('ap-play-fort');
+
+audioFort.addEventListener('loadedmetadata',()=>{ durTFort.textContent=fmt(audioFort.duration); });
+audioFort.addEventListener('timeupdate',()=>{
+  if(!audioFort.duration) return;
+  fillFort.style.width=((audioFort.currentTime/audioFort.duration)*100)+'%';
+  curTFort.textContent=fmt(audioFort.currentTime);
+});
+audioFort.addEventListener('ended',()=>{ playBtnFort.textContent='▶'; fillFort.style.width='0%'; curTFort.textContent='0:00'; });
+
+function togglePlayFort(){
+  // Pause other player
+  if(!audioFort.paused){ audioFort.pause(); playBtnFort.textContent='▶'; return; }
+  audio.pause(); document.getElementById('ap-play').textContent='▶';
+  audioFort.play(); playBtnFort.textContent='⏸';
+}
+function seekAudioFort(e){
+  const rect=e.currentTarget.getBoundingClientRect();
+  audioFort.currentTime=((e.clientX-rect.left)/rect.width)*audioFort.duration;
+}
+
+
+
+/* ═══════════════════════════════
+   CONTACT FORM → NETLIFY
+═══════════════════════════════ */
+function encode(data){
+  return Object.keys(data).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(data[k])).join('&');
+}
+async function sendForm(){
+  const n=document.getElementById('fn').value.trim();
+  const e=document.getElementById('fe').value.trim();
+  const s=document.getElementById('ft').value;
+  const m=document.getElementById('fm').value.trim();
+  const b=document.getElementById('sbtn');
+
+  if(!n||!e||!m){
+    b.textContent='⚠️ REMPLISSEZ TOUS LES CHAMPS';
+    b.style.background='#FF6B00';
+    setTimeout(()=>{b.textContent='ENVOYER LE MESSAGE';b.style.background='';},2200);
+    return;
+  }
+
+  b.textContent='⏳ ENVOI EN COURS...';
+  b.disabled=true;
+  try{
+    await fetch('/',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:encode({'form-name':'contact',nom:n,email:e,sujet:s,message:m})
+    });
+    b.textContent='✅ MESSAGE ENVOYÉ !';
+    b.classList.add('sent');
+    document.getElementById('fn').value='';
+    document.getElementById('fe').value='';
+    document.getElementById('fm').value='';
+    genCaptcha();
+    setTimeout(()=>{b.textContent='ENVOYER LE MESSAGE';b.classList.remove('sent');b.disabled=false;},4000);
+  }catch{
+    b.textContent='❌ ERREUR — RÉESSAYEZ';
+    b.style.background='#FF6B00';
+    b.disabled=false;
+    setTimeout(()=>{b.textContent='ENVOYER LE MESSAGE';b.style.background='';},3000);
+  }
+}
+
+/* ═══════════════════════════════
+   YOUTUBE LOADER
+═══════════════════════════════ */
+function loadVideo(channel){
+  const c=document.getElementById('yt-container');
+  c.innerHTML=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed?listType=user_uploads&list=${channel}&autoplay=1" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="border:none;"></iframe>`;
+}
+
+/* ═══════════════════════════════
+   COUNTERS
+═══════════════════════════════ */
+let countersInit=false;
+function initCounters(){
+  if(countersInit)return;
+  countersInit=true;
+  function cnt(id,target,suf=''){
+    let n=0;const step=Math.ceil(target/40);
+    const ti=setInterval(()=>{n=Math.min(n+step,target);document.getElementById(id).textContent=n+suf;if(n>=target)clearInterval(ti);},40);
+  }
+  setTimeout(()=>{cnt('c1',24,'+');cnt('c2',18,'+');cnt('c3',47,'+');cnt('c4',5);},600);
+}
+
+/* ═══════════════════════════════
+   ADMIN PANEL
+═══════════════════════════════ */
+const ADMIN_CODE = '63200';
+const ADMIN_KEY = 'jvb_admin';
+let isAdmin = false;
+
+// Check if admin on load
+function checkAdmin(){
+  isAdmin = sessionStorage.getItem(ADMIN_KEY) === 'true';
+  const sess = JSON.parse(getSession()||'{}');
+  const isAdminEmail = sess.email==='jvb.productionss@gmail.com'||sess.email==='enzorodrigues6312@gmail.com';
+  if(isAdminEmail){
+    const tabBtn = document.getElementById('admin-tab-btn');
+    if(tabBtn) tabBtn.style.display='flex';
+    document.getElementById('admin-float-btn').classList.add('visible');
+  }
+}
+
+// Called after login
+function checkAdminOnLogin(email){
+  if(email === 'jvb.productionss@gmail.com' || email === 'enzorodrigues6312@gmail.com'){
+    // Show admin tab button (gate will ask for code)
+    const tabBtn = document.getElementById('admin-tab-btn');
+    if(tabBtn) tabBtn.style.display='flex';
+    document.getElementById('admin-float-btn').classList.add('visible');
+  }
+}
+
+function openAdminGate(){
+  if(isAdmin){ openAdmin(); return; }
+  document.getElementById('gate-code').value='';
+  document.getElementById('gate-err').style.display='none';
+  document.getElementById('admin-gate').style.display='flex';
+  setTimeout(()=>document.getElementById('gate-code').focus(),100);
+}
+
+function checkAdminGate(){
+  const code = document.getElementById('gate-code').value;
+  if(code === ADMIN_CODE){
+    sessionStorage.setItem(ADMIN_KEY,'true');
+    isAdmin = true;
+    document.getElementById('admin-gate').style.display='none';
+    // Envoyer email via EmailJS
+    const sess = JSON.parse(getSession()||'{}');
+    emailjs.send('service_vscdpxh', 'template_vi13srh', {
+      sujet: '⚙️ Accès Admin JVB Productions',
+      nom: sess.name||'Admin',
+      email: sess.email||'?',
+      role: 'Administrateur',
+      message: '⚙️ Accès au panneau admin activé !\nCompte : '+sess.name+'\nEmail : '+sess.email
+    }).catch(()=>{});
+    openAdmin();
+  } else {
+    const err = document.getElementById('gate-err');
+    err.style.display='block';
+    document.getElementById('gate-code').value='';
+    setTimeout(()=>err.style.display='none',2500);
+  }
+}
+
+function openAdmin(){
+  document.getElementById('admin-overlay').classList.add('open');
+  renderAdminLists();
+}
+function closeAdmin(){
+  document.getElementById('admin-overlay').classList.remove('open');
+}
+
+function switchAdminTab(t){
+  document.querySelectorAll('.atab').forEach((b,i)=>b.classList.toggle('active',['music','cinema','actu'][i]===t));
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('atab-'+t).classList.add('active');
+}
+
+/* STORAGE HELPERS */
+function getAdminData(key){ try{ return JSON.parse(localStorage.getItem('jvb_'+key))||[]; }catch{ return []; } }
+function saveAdminData(key,data){ localStorage.setItem('jvb_'+key, JSON.stringify(data)); }
+
+const COLORS = ['#FAFF00','#00E5FF','#39FF14','#FF6B00'];
+
+/* ADD MUSIC */
+function addMusic(){
+  const title = document.getElementById('a-music-title').value.trim();
+  const artist = document.getElementById('a-music-artist').value.trim();
+  const genre = document.getElementById('a-music-genre').value;
+  const yt = document.getElementById('a-music-yt').value.trim();
+  if(!title||!artist){ alert('Remplis le titre et l'artiste !'); return; }
+  const data = getAdminData('music_extra');
+  const color = COLORS[data.length % COLORS.length];
+  const item = { id: Date.now(), title, artist, genre, yt, color, year: new Date().getFullYear() };
+  data.push(item);
+  saveAdminData('music_extra', data);
+  // Add to music grid
+  renderExtraMusic();
+  document.getElementById('a-music-title').value='';
+  document.getElementById('a-music-artist').value='';
+  document.getElementById('a-music-yt').value='';
+  const ok = document.getElementById('a-music-ok');
+  ok.style.display='block';
+  setTimeout(()=>ok.style.display='none',2500);
+  renderAdminLists();
+}
+
+/* ADD CINEMA */
+function addCinema(){
+  const title = document.getElementById('a-cine-title').value.trim();
+  const type = document.getElementById('a-cine-type').value;
+  const dur = document.getElementById('a-cine-dur').value.trim();
+  const yt = document.getElementById('a-cine-yt').value.trim();
+  if(!title){ alert('Remplis le titre !'); return; }
+  const data = getAdminData('cinema_extra');
+  const color = COLORS[data.length % COLORS.length];
+  const item = { id: Date.now(), title, type, dur, yt, color, year: new Date().getFullYear() };
+  data.push(item);
+  saveAdminData('cinema_extra', data);
+  renderExtraCinema();
+  document.getElementById('a-cine-title').value='';
+  document.getElementById('a-cine-dur').value='';
+  document.getElementById('a-cine-yt').value='';
+  const ok = document.getElementById('a-cine-ok');
+  ok.style.display='block';
+  setTimeout(()=>ok.style.display='none',2500);
+  renderAdminLists();
+}
+
+/* ADD ACTU */
+function addActu(){
+  const title = document.getElementById('a-actu-title').value.trim();
+  const cat = document.getElementById('a-actu-cat').value;
+  const content = document.getElementById('a-actu-content').value.trim();
+  if(!title||!content){ alert('Remplis tous les champs !'); return; }
+  const data = getAdminData('actu_extra');
+  const now = new Date();
+  const months = ['JAN','FÉV','MAR','AVR','MAI','JUN','JUL','AOÛ','SEP','OCT','NOV','DÉC'];
+  const item = { id: Date.now(), title, cat, content, day: now.getDate(), month: months[now.getMonth()], year: now.getFullYear() };
+  data.unshift(item);
+  saveAdminData('actu_extra', data);
+  renderExtraActu();
+  document.getElementById('a-actu-title').value='';
+  document.getElementById('a-actu-content').value='';
+  const ok = document.getElementById('a-actu-ok');
+  ok.style.display='block';
+  setTimeout(()=>ok.style.display='none',2500);
+  renderAdminLists();
+}
+
+/* DELETE */
+function deleteItem(key, id){
+  let data = getAdminData(key);
+  data = data.filter(d=>d.id!==id);
+  saveAdminData(key, data);
+  if(key==='music_extra') renderExtraMusic();
+  if(key==='cinema_extra') renderExtraCinema();
+  if(key==='actu_extra') renderExtraActu();
+  renderAdminLists();
+}
+
+/* RENDER ADMIN LISTS */
+function renderAdminLists(){
+  const ml = document.getElementById('a-music-list');
+  const cl = document.getElementById('a-cine-list');
+  const al = document.getElementById('a-actu-list');
+  const music = getAdminData('music_extra');
+  const cinema = getAdminData('cinema_extra');
+  const actu = getAdminData('actu_extra');
+
+  ml.innerHTML = music.length ? music.map(m=>`
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <div class="admin-item-title">${m.title}</div>
+        <div class="admin-item-sub">${m.artist} · ${m.genre} · ${m.year}</div>
+      </div>
+      <button class="admin-item-del" onclick="deleteItem('music_extra',${m.id})">🗑</button>
+    </div>`).join('') : '<div style="color:var(--muted);font-family:Space Mono,monospace;font-size:11px;padding:10px;">Aucun son publié.</div>';
+
+  cl.innerHTML = cinema.length ? cinema.map(c=>`
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <div class="admin-item-title">${c.title}</div>
+        <div class="admin-item-sub">${c.type} · ${c.dur||'?'} · ${c.year}</div>
+      </div>
+      <button class="admin-item-del" onclick="deleteItem('cinema_extra',${c.id})">🗑</button>
+    </div>`).join('') : '<div style="color:var(--muted);font-family:Space Mono,monospace;font-size:11px;padding:10px;">Aucun film publié.</div>';
+
+  al.innerHTML = actu.length ? actu.map(a=>`
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <div class="admin-item-title">${a.title}</div>
+        <div class="admin-item-sub">${a.cat} · ${a.day} ${a.month} ${a.year}</div>
+      </div>
+      <button class="admin-item-del" onclick="deleteItem('actu_extra',${a.id})">🗑</button>
+    </div>`).join('') : '<div style="color:var(--muted);font-family:Space Mono,monospace;font-size:11px;padding:10px;">Aucune actu publiée.</div>';
+}
+
+/* RENDER EXTRA CONTENT IN PAGES */
+function renderExtraMusic(){
+  const data = getAdminData('music_extra');
+  const grid = document.getElementById('music-grid');
+  // Remove previously added admin cards
+  grid.querySelectorAll('.admin-card').forEach(e=>e.remove());
+  data.forEach(m=>{
+    const bars = Array.from({length:16}).map((_,i)=>`<div class="wb" style="--d:${0.4+i%5*0.1}s;--dl:${i*0.05}s;background:${m.color}"></div>`).join('');
+    const card = document.createElement('div');
+    card.className = 'card admin-card';
+    card.style.cssText = `--cc:${m.color}`;
+    card.innerHTML = `<div class="ctag">${m.genre} · ${m.year}</div><div class="ctitle">${m.title}</div><div class="csub">${m.artist}</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="pbtn" style="background:${m.color}" onclick="this.textContent=this.textContent==='▶'?'⏸':'▶'">▶</button>
+        <div class="wave-bars">${bars}</div>
+      </div>
+      ${m.yt?`<a href="${m.yt}" target="_blank" style="display:inline-block;margin-top:10px;font-family:Space Mono,monospace;font-size:10px;color:${m.color};text-decoration:none;letter-spacing:1px;">▶ ÉCOUTER</a>`:''}`;
+    grid.appendChild(card);
+  });
+}
+
+function renderExtraCinema(){
+  const data = getAdminData('cinema_extra');
+  const grid = document.getElementById('cinema-grid');
+  grid.querySelectorAll('.admin-card').forEach(e=>e.remove());
+  data.forEach(c=>{
+    const card = document.createElement('div');
+    card.className = 'card admin-card';
+    card.style.cssText = `--cc:${c.color}`;
+    card.innerHTML = `<div class="ctag">${c.type} · ${c.year}</div><div class="ctitle">${c.title}</div><div class="csub">${c.dur||''}</div>
+      ${c.yt?`<a href="${c.yt}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid ${c.color};color:${c.color};border-radius:8px;padding:8px 16px;font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;text-decoration:none;margin-top:8px;transition:all 0.2s;">▶ VOIR LE PROJET</a>`:''}`;
+    grid.appendChild(card);
+  });
+}
+
+function renderExtraActu(){
+  const data = getAdminData('actu_extra');
+  const list = document.getElementById('actu-list');
+  if(!list) return;
+  list.querySelectorAll('.admin-actu').forEach(e=>e.remove());
+  const colors = {'MUSIQUE':'var(--yellow)','CINÉMA':'var(--cyan)','PODCAST':'var(--green)','ASSOCIATION':'var(--orange)','ÉVÉNEMENT':'#FF6B00'};
+  data.forEach(a=>{
+    const c = colors[a.cat]||'var(--yellow)';
+    const div = document.createElement('div');
+    div.className = 'admin-actu';
+    div.style.cssText = `background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;gap:24px;align-items:flex-start;margin-bottom:20px;`;
+    div.innerHTML = `
+      <div style="background:color-mix(in srgb,${c} 20%,transparent);border:1px solid color-mix(in srgb,${c} 40%,transparent);border-radius:12px;padding:14px 18px;text-align:center;flex-shrink:0;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:${c};line-height:1;">${a.day}</div>
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;">${a.month} ${a.year}</div>
+      </div>
+      <div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:${c};letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">📢 ${a.cat}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#fff;margin-bottom:8px;">${a.title}</div>
+        <p style="color:var(--muted);font-size:15px;line-height:1.7;">${a.content}</p>
+      </div>`;
+    list.insertBefore(div, list.firstChild);
+  });
+}
+
+// showMain already includes admin check below
+
+
+</script>
+</body>
+</html>
